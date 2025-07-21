@@ -62,3 +62,23 @@ if submit:
         st.success(f"✅ Loan Approved with confidence: {proba:.2f}")
     else:
         st.error(f"❌ Loan Rejected with confidence: {proba:.2f}")
+
+
+#extension
+
+import shap
+import matplotlib.pyplot as plt
+import streamlit as st
+
+# SHAP explanation (bar plot)
+explainer = shap.TreeExplainer(model)
+shap_values = explainer.shap_values(input_df)
+
+st.subheader("🔍 Explanation (SHAP)")
+st.markdown("**Top factors influencing this decision:**")
+
+# Plot SHAP bar chart
+fig, ax = plt.subplots()
+shap.summary_plot(shap_values, input_df, plot_type="bar", show=False)
+st.pyplot(fig)
+
