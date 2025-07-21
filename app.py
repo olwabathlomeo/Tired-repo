@@ -54,7 +54,7 @@ if st.button("🔎 Predict"):
     else:
         st.error(f"❌ Loan Rejected with confidence: {confidence:.2f}")
 
-    # --- SHAP Explanation ---
+        # --- SHAP Explanation ---
     st.subheader("🧠 SHAP Explanation: Why this decision?")
     explainer = shap.Explainer(model)
     shap_values = explainer(input_df)
@@ -62,6 +62,18 @@ if st.button("🔎 Predict"):
     shap_df = pd.DataFrame({
         "Feature": input_df.columns,
         "SHAP Value": shap_values.values[0]
-    }).sort_values(by="SHAP Value", key=abs, ascending=False)
+    }).sort_values(by="SHAP Value", key=abs, ascending=True)
 
-    st.bar_chart(shap_df.set_index("Feature"))
+    # Color code: green for positive, red for negative
+    colors = shap_df["SHAP Value"].apply(lambda x: 'green' if x > 0 else 'red')
+
+    # Plot with Matplotlib
+    import matplotlib.pyplot as plt
+
+    fig, ax = plt.subplots(figsize=(8, 5))
+    ax.barh(shap_df["Feature"], shap_df["SHAP Value"], color=colors)
+    ax.set_title("Feature Impact (SHAP values)")
+    ax.set_xlabel("Contribution to Prediction")
+
+    st.pyplot(fig)
+
